@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  swoole:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+    volumes:
+      - .:/var/www
+    command: php index.php
+    user: $UID:$GID
+
+  composer:
+    image: composer
+    volumes:
+      - .:/app
+    command: composer install
+    user: $UID:$GID
+    
