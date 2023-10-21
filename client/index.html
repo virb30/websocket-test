@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <output></output>
+    <input type="text" placeholder="Digite sua mensagem..." />
+    <span></span>
+
+    <script>
+        const ws = new WebSocket('ws://host.docker.internal:8088');
+        const input = document.querySelector('input');
+        const output = document.querySelector('output');
+        const span = document.querySelector('span');
+
+        ws.addEventListener('open', console.log);
+        ws.addEventListener('message', console.log);
+
+        ws.addEventListener('message', message => {
+            const data = JSON.parse(message.data);
+            if (data.type === 'chat') {
+                output.append('Outro: ' + data.text, document.createElement('br'));
+            }
+
+            if (data.type === 'login') {
+                span.innerHTML = data.text ?? '';
+            }
+        });
+
+        input.addEventListener('keypress', e => {
+            if (e.code === 'Enter') {
+                const value = input.value;
+                output.append('Eu: ' + value, document.createElement('br'));
+                ws.send(value);
+
+                input.value = '';
+            }
+        });
+    </script>
+</body>
+
+</html>
